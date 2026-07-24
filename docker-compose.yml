@@ -2,6 +2,9 @@ services:
   stark-python-template:
     build: .
     container_name: stark-python-template
+    ports:
+      - "8000:8000"
     volumes:
       - .:/app
-    command: uv run python main.py
+      - /app/.venv
+    command: uv run uvicorn stark.main:app --host 0.0.0.0 --port 8000
