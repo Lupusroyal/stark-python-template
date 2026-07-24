@@ -1,0 +1,7 @@
+services:
+  stark-python-template:
+    build: .
+    container_name: stark-python-template
+    volumes:
+      - .:/app
+    command: uv run python main.py
