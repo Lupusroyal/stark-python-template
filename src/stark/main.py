@@ -1,10 +1,11 @@
 from fastapi import FastAPI
 
 from stark.api.routes.health import router as health_router
+from stark.core.config import settings
 
 app = FastAPI(
-    title="Stark API",
-    version="0.1.0",
+    title=settings.app_name,
+    version=settings.app_version,
 )
 
 
@@ -14,7 +15,7 @@ app.include_router(health_router)
 @app.get("/")
 def root():
     return {
-        "app": "Stark API",
+        "app": settings.app_name,
         "status": "online",
-        "version": "0.1.0",
+        "version": settings.app_version,
     }
