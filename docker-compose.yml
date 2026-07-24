@@ -2,9 +2,16 @@ services:
   stark-python-template:
     build: .
     container_name: stark-python-template
+    env_file:
+      - .env
     ports:
       - "8000:8000"
     volumes:
       - .:/app
       - /app/.venv
     command: uv run uvicorn stark.main:app --host 0.0.0.0 --port 8000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
