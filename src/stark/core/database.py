@@ -4,10 +4,9 @@ from sqlalchemy.orm import DeclarativeBase, sessionmaker
 from stark.core.config import settings
 
 engine = create_engine(
-    settings.DATABASE_URL,
-    echo=settings.DEBUG,
+    settings.database_url,
+    echo=settings.debug,
 )
-
 
 SessionLocal = sessionmaker(
     autocommit=False,

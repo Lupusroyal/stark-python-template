@@ -28,3 +28,6 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/stark"]
+
+[tool.mypy]
+exclude = "alembic/"
