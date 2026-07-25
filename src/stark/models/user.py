@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 
 from sqlalchemy import DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column
@@ -26,7 +26,12 @@ class User(Base):
         index=True,
     )
 
+    hashed_password: Mapped[str] = mapped_column(
+        String(255),
+        nullable=False,
+    )
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=datetime.utcnow,
+        default=lambda: datetime.now(UTC),
     )
