@@ -1,5 +1,7 @@
 from pydantic import BaseModel, ConfigDict, EmailStr
 
+from stark.models.user import UserRole
+
 
 class UserCreate(BaseModel):
     name: str
@@ -25,11 +27,10 @@ class UserAdminResponse(BaseModel):
     name: str
     email: EmailStr
     is_active: bool
-    role: str
+    role: UserRole
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserRoleUpdate(BaseModel):
-    role: str
+    role: UserRole

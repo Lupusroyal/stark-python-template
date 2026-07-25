@@ -1,9 +1,15 @@
 from datetime import UTC, datetime
+from enum import Enum
 
 from sqlalchemy import DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from stark.core.database import Base
+
+
+class UserRole(str, Enum):
+    USER = "user"
+    ADMIN = "admin"
 
 
 class User(Base):
@@ -36,8 +42,9 @@ class User(Base):
         nullable=False,
     )
 
-    role: Mapped[str] = mapped_column(
-        default="user",
+    role: Mapped[UserRole] = mapped_column(
+        String(50),
+        default=UserRole.USER,
         nullable=False,
     )
 
