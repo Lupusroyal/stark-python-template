@@ -31,6 +31,16 @@ class User(Base):
         nullable=False,
     )
 
+    is_active: Mapped[bool] = mapped_column(
+        default=True,
+        nullable=False,
+    )
+
+    role: Mapped[str] = mapped_column(
+        default="user",
+        nullable=False,
+    )
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=lambda: datetime.now(UTC),

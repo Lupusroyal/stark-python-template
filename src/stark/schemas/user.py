@@ -13,3 +13,23 @@ class UserResponse(BaseModel):
     email: EmailStr
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class UserUpdate(BaseModel):
+    name: str
+    email: EmailStr
+
+
+class UserAdminResponse(BaseModel):
+    id: int
+    name: str
+    email: EmailStr
+    is_active: bool
+    role: str
+
+    class Config:
+        from_attributes = True
+
+
+class UserRoleUpdate(BaseModel):
+    role: str
