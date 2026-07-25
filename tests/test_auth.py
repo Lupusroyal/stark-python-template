@@ -1,10 +1,3 @@
-from fastapi.testclient import TestClient
-
-from stark.main import app
-
-client = TestClient(app)
-
-
 def test_login(client):
 
     client.post(
@@ -18,8 +11,8 @@ def test_login(client):
 
     response = client.post(
         "/auth/login",
-        json={
-            "email": "yago@example.com",
+        data={
+            "username": "yago@example.com",
             "password": "123456",
         },
     )

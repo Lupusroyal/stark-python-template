@@ -9,6 +9,7 @@ def authenticate_user(
     email: str,
     password: str,
 ):
+
     user = db.query(User).filter(User.email == email).first()
 
     if not user:

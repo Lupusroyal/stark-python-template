@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from stark.core.database import get_db
@@ -18,7 +18,15 @@ def create(
     user: UserCreate,
     db: Session = Depends(get_db),
 ):
-    return create_user(db, user)
+    db_user = create_user(db, user)
+
+    if db_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Email já cadastrado",
+        )
+
+    return db_user
 
 
 @router.get("/", response_model=list[UserResponse])
@@ -27,3 +35,14 @@ def list_users(
     current_user: User = Depends(get_current_user),
 ):
     return get_users(db)
+
+
+@router.get("/me")
+def get_profile(
+    current_user: User = Depends(get_current_user),
+):
+    return {
+        "id": current_user.id,
+        "name": current_user.name,
+        "email": current_user.email,
+    }

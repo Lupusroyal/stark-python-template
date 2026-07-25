@@ -1,10 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from stark.core.database import get_db
 from stark.core.security import create_access_token
-from stark.schemas.auth import LoginRequest, TokenResponse
-from stark.services.user_service import authenticate_user
+from stark.dependencies.auth import get_current_user
+from stark.models.user import User
+from stark.schemas.auth import TokenResponse
+from stark.services.auth_service import authenticate_user
 
 router = APIRouter(
     prefix="/auth",
@@ -14,13 +17,13 @@ router = APIRouter(
 
 @router.post("/login", response_model=TokenResponse)
 def login(
-    data: LoginRequest,
+    form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db),
 ):
     user = authenticate_user(
         db,
-        data.email,
-        data.password,
+        form_data.username,
+        form_data.password,
     )
 
     if not user:
@@ -39,4 +42,15 @@ def login(
     return {
         "access_token": token,
         "token_type": "bearer",
+    }
+
+
+@router.get("/me")
+def me(
+    user: User = Depends(get_current_user),
+):
+    return {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
     }
