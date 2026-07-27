@@ -2,7 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from stark.core.database import get_db
-from stark.dependencies.permissions import require_admin
+from stark.core.permissions import Permissions
+from stark.dependencies.permissions import (
+    require_permission,
+)
 from stark.models.user import User
 from stark.schemas.user import (
     AuditLogResponse,
@@ -33,7 +36,7 @@ router = APIRouter(
 )
 def list_users_admin(
     db: Session = Depends(get_db),
-    admin: User = Depends(require_admin),
+    admin: User = Depends(require_permission(Permissions.USERS_READ)),
 ):
     return get_users(db)
 
@@ -45,7 +48,7 @@ def list_users_admin(
 def get_user_admin(
     user_id: int,
     db: Session = Depends(get_db),
-    admin: User = Depends(require_admin),
+    admin: User = Depends(require_permission(Permissions.USERS_READ)),
 ):
     user = get_user_by_id(
         db,
@@ -68,7 +71,7 @@ def get_user_admin(
 def activate_user_admin(
     user_id: int,
     db: Session = Depends(get_db),
-    admin: User = Depends(require_admin),
+    admin: User = Depends(require_permission(Permissions.USERS_UPDATE)),
 ):
     user = activate_user(
         db,
@@ -98,7 +101,7 @@ def activate_user_admin(
 def deactivate_user_admin(
     user_id: int,
     db: Session = Depends(get_db),
-    admin: User = Depends(require_admin),
+    admin: User = Depends(require_permission(Permissions.USERS_UPDATE)),
 ):
     user = deactivate_user(
         db,
@@ -129,8 +132,21 @@ def change_user_role(
     user_id: int,
     data: UserRoleUpdate,
     db: Session = Depends(get_db),
-    admin: User = Depends(require_admin),
+    admin: User = Depends(require_permission(Permissions.USERS_UPDATE)),
 ):
+    existing_user = get_user_by_id(
+        db,
+        user_id,
+    )
+
+    if existing_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuário não encontrado",
+        )
+
+    old_role = existing_user.role
+
     user = update_user_role(
         db,
         user_id,
@@ -148,6 +164,10 @@ def change_user_role(
         admin.id,
         "change_role",
         user.id,
+        details={
+            "old_role": old_role,
+            "new_role": data.role,
+        },
     )
 
     return user
@@ -159,6 +179,6 @@ def change_user_role(
 )
 def list_audit_logs(
     db: Session = Depends(get_db),
-    admin: User = Depends(require_admin),
+    admin: User = Depends(require_permission(Permissions.AUDIT_READ)),
 ):
     return get_audit_logs(db)

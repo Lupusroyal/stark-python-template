@@ -8,11 +8,13 @@ def create_audit_log(
     actor_id: int,
     action: str,
     target_id: int,
+    details: dict | None = None,
 ):
     audit = AuditLog(
         actor_id=actor_id,
         action=action,
         target_id=target_id,
+        details=details,
     )
 
     db.add(audit)

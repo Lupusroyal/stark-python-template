@@ -7,6 +7,8 @@ from stark.core.database import Base, get_db
 from stark.core.security import create_access_token, hash_password
 from stark.main import app
 from stark.models.user import User, UserRole
+from stark.services.permission_service import create_default_permissions
+from stark.services.role_permission_service import create_default_role_permissions
 
 TEST_DATABASE_URL = "postgresql+psycopg://postgres:postgres@localhost:5432/stark_test"
 
@@ -26,6 +28,9 @@ def db_session():
     Base.metadata.create_all(bind=engine)
 
     db = TestingSessionLocal()
+
+    create_default_permissions(db)
+    create_default_role_permissions(db)
 
     try:
         yield db
