@@ -4,7 +4,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from stark.core.database import Base, get_db
+from stark.core.security import create_access_token, hash_password
 from stark.main import app
+from stark.models.user import User, UserRole
 
 TEST_DATABASE_URL = "postgresql+psycopg://postgres:postgres@localhost:5432/stark_test"
 
@@ -46,3 +48,29 @@ def client(db_session):
         yield test_client
 
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def admin_user(db_session):
+    user = User(
+        name="Administrador",
+        email="admin@test.com",
+        hashed_password=hash_password("123456"),
+        is_active=True,
+        role=UserRole.ADMIN,
+    )
+
+    db_session.add(user)
+    db_session.commit()
+    db_session.refresh(user)
+
+    return user
+
+
+@pytest.fixture
+def admin_token(admin_user):
+    return create_access_token(
+        {
+            "sub": str(admin_user.id),
+        }
+    )

@@ -5,8 +5,13 @@ from stark.core.database import get_db
 from stark.dependencies.permissions import require_admin
 from stark.models.user import User
 from stark.schemas.user import (
+    AuditLogResponse,
     UserAdminResponse,
     UserRoleUpdate,
+)
+from stark.services.audit_service import (
+    create_audit_log,
+    get_audit_logs,
 )
 from stark.services.user_service import (
     activate_user,
@@ -76,6 +81,13 @@ def activate_user_admin(
             detail="Usuário não encontrado",
         )
 
+    create_audit_log(
+        db,
+        admin.id,
+        "activate_user",
+        user.id,
+    )
+
     return user
 
 
@@ -98,6 +110,13 @@ def deactivate_user_admin(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Usuário não encontrado",
         )
+
+    create_audit_log(
+        db,
+        admin.id,
+        "deactivate_user",
+        user.id,
+    )
 
     return user
 
@@ -124,4 +143,22 @@ def change_user_role(
             detail="Usuário não encontrado",
         )
 
+    create_audit_log(
+        db,
+        admin.id,
+        "change_role",
+        user.id,
+    )
+
     return user
+
+
+@router.get(
+    "/audit-logs",
+    response_model=list[AuditLogResponse],
+)
+def list_audit_logs(
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    return get_audit_logs(db)
