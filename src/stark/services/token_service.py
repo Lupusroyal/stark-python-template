@@ -32,3 +32,14 @@ class TokenService:
         self.repository.create(refresh_token)
 
         return token
+
+    def validate_refresh_token(
+        self,
+        token: str,
+    ) -> RefreshToken | None:
+
+        token_hash = hash_token(token)
+
+        return self.repository.get_valid_token(
+            token_hash,
+        )

@@ -1,10 +1,14 @@
 from datetime import UTC, datetime
 from enum import Enum
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from stark.core.database import Base
+
+if TYPE_CHECKING:
+    from stark.models.refresh_token import RefreshToken
 
 
 class UserRole(str, Enum):
@@ -46,6 +50,10 @@ class User(Base):
         String(50),
         default=UserRole.USER,
         nullable=False,
+    )
+
+    refresh_tokens: Mapped[list["RefreshToken"]] = relationship(
+        back_populates="user",
     )
 
     created_at: Mapped[datetime] = mapped_column(

@@ -1,9 +1,13 @@
-from datetime import UTC, datetime
+from datetime import datetime
+from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, ForeignKey, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from stark.core.database import Base
+
+if TYPE_CHECKING:
+    from stark.models.user import User
 
 
 class RefreshToken(Base):
@@ -27,7 +31,6 @@ class RefreshToken(Base):
     )
 
     expires_at: Mapped[datetime] = mapped_column(
-        DateTime,
         nullable=False,
     )
 
@@ -37,6 +40,10 @@ class RefreshToken(Base):
     )
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=lambda: datetime.now(UTC),
+        default=datetime.utcnow,
+        nullable=False,
+    )
+
+    user: Mapped["User"] = relationship(
+        back_populates="refresh_tokens",
     )
