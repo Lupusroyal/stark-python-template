@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from stark.core.security import verify_password
-from stark.models.user import User
+from stark.repositories.user_repository import UserRepository
 
 
 def authenticate_user(
@@ -9,7 +9,9 @@ def authenticate_user(
     email: str,
     password: str,
 ):
-    user = db.query(User).filter(User.email == email).first()
+    repository = UserRepository(db)
+
+    user = repository.get_by_email(email)
 
     if not user:
         return None

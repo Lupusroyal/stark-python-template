@@ -1,8 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from stark.core.database import get_db
-from stark.core.security import get_current_user
+from stark.core.exceptions import (
+    EmailAlreadyExistsException,
+    UserNotFoundException,
+)
+from stark.dependencies.auth import get_current_user
 from stark.models.user import User
 from stark.schemas.user import (
     UserCreate,
@@ -31,10 +35,7 @@ def create(
     db_user = create_user(db, user)
 
     if db_user is None:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Email já cadastrado",
-        )
+        raise EmailAlreadyExistsException()
 
     return db_user
 
@@ -75,10 +76,7 @@ def get_user(
     )
 
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Usuário não encontrado",
-        )
+        raise UserNotFoundException()
 
     return user
 
@@ -97,10 +95,7 @@ def update(
     )
 
     if updated_user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Usuário não encontrado",
-        )
+        raise UserNotFoundException()
 
     return updated_user
 

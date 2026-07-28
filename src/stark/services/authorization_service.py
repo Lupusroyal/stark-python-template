@@ -1,8 +1,10 @@
 from sqlalchemy.orm import Session
 
-from stark.models.permission import Permission
-from stark.models.role_permission import RolePermission
 from stark.models.user import User
+from stark.repositories.permission_repository import PermissionRepository
+from stark.repositories.role_permission_repository import (
+    RolePermissionRepository,
+)
 
 
 def user_has_permission(
@@ -10,24 +12,20 @@ def user_has_permission(
     user: User,
     permission_name: str,
 ) -> bool:
-    permission = (
-        db.query(Permission)
-        .filter(
-            Permission.name == permission_name,
-        )
-        .first()
+    permission_repository = PermissionRepository(db)
+
+    permission = permission_repository.get_by_name(
+        permission_name,
     )
 
     if permission is None:
         return False
 
-    role_permission = (
-        db.query(RolePermission)
-        .filter(
-            RolePermission.role == user.role,
-            RolePermission.permission_id == permission.id,
-        )
-        .first()
+    role_repository = RolePermissionRepository(db)
+
+    role_permission = role_repository.get_role_permission(
+        user.role,
+        permission.id,
     )
 
     return role_permission is not None

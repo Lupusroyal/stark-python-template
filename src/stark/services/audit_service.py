@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 
 from stark.models.audit_log import AuditLog
+from stark.repositories.audit_repository import AuditRepository
 
 
 def create_audit_log(
@@ -17,12 +18,28 @@ def create_audit_log(
         details=details,
     )
 
-    db.add(audit)
-    db.commit()
-    db.refresh(audit)
+    repository = AuditRepository(db)
 
-    return audit
+    return repository.save(audit)
 
 
-def get_audit_logs(db: Session):
-    return db.query(AuditLog).order_by(AuditLog.created_at.desc()).all()
+def get_audit_logs(
+    db: Session,
+    skip: int = 0,
+    limit: int = 100,
+):
+    repository = AuditRepository(db)
+
+    logs = repository.list_all(
+        skip,
+        limit,
+    )
+
+    total = repository.count()
+
+    return {
+        "items": logs,
+        "total": total,
+        "skip": skip,
+        "limit": limit,
+    }

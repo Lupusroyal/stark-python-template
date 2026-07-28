@@ -45,7 +45,14 @@ def test_admin_can_view_audit_logs(
     )
 
     assert response.status_code == 200
-    assert isinstance(response.json(), list)
+    data = response.json()
+
+    assert isinstance(data, dict)
+    assert "items" in data
+    assert "total" in data
+    assert "skip" in data
+    assert "limit" in data
+    assert isinstance(data["items"], list)
 
 
 def test_user_cannot_view_audit_logs(
@@ -298,6 +305,66 @@ def test_user_cannot_activate_user(
 
     response = client.patch(
         f"/admin/users/{target.id}/activate",
+        headers={
+            "Authorization": f"Bearer {token}",
+        },
+    )
+
+    assert response.status_code == 403
+
+
+def test_admin_can_list_permissions(
+    client,
+    admin_token,
+):
+    response = client.get(
+        "/admin/permissions",
+        headers={
+            "Authorization": f"Bearer {admin_token}",
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+
+    assert isinstance(data, dict)
+    assert "items" in data
+    assert "total" in data
+    assert "skip" in data
+    assert "limit" in data
+    assert isinstance(data["items"], list)
+
+
+def test_user_cannot_list_permissions(
+    client,
+    db_session,
+):
+    from stark.core.security import hash_password
+    from stark.models.user import User, UserRole
+
+    user = User(
+        name="Usuário Comum",
+        email="userpermissions@example.com",
+        hashed_password=hash_password("123456"),
+        is_active=True,
+        role=UserRole.USER,
+    )
+
+    db_session.add(user)
+    db_session.commit()
+
+    response = client.post(
+        "/auth/login",
+        data={
+            "username": "userpermissions@example.com",
+            "password": "123456",
+        },
+    )
+
+    token = response.json()["access_token"]
+
+    response = client.get(
+        "/admin/permissions",
         headers={
             "Authorization": f"Bearer {token}",
         },

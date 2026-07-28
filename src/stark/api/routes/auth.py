@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from stark.core.database import get_db
+from stark.core.exceptions import InvalidCredentialsException
 from stark.core.security import create_access_token
 from stark.dependencies.auth import get_current_user
 from stark.models.user import User
@@ -27,10 +28,7 @@ def login(
     )
 
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Email ou senha incorretos",
-        )
+        raise InvalidCredentialsException()
 
     token = create_access_token(
         {

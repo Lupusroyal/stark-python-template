@@ -5,10 +5,43 @@ from stark.api.routes.auth import router as auth_router
 from stark.api.routes.health import router as health_router
 from stark.api.routes.users import router as users_router
 from stark.core.config import settings
+from stark.core.exception_handlers import (
+    email_exists_handler,
+    invalid_credentials_handler,
+    permission_denied_handler,
+    user_not_found_handler,
+)
+from stark.core.exceptions import (
+    EmailAlreadyExistsException,
+    InvalidCredentialsException,
+    PermissionDeniedException,
+    UserNotFoundException,
+)
 
 app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
+)
+
+
+app.add_exception_handler(
+    UserNotFoundException,
+    user_not_found_handler,
+)
+
+app.add_exception_handler(
+    PermissionDeniedException,
+    permission_denied_handler,
+)
+
+app.add_exception_handler(
+    InvalidCredentialsException,
+    invalid_credentials_handler,
+)
+
+app.add_exception_handler(
+    EmailAlreadyExistsException,
+    email_exists_handler,
 )
 
 

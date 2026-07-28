@@ -1,12 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from stark.core.database import get_db
+from stark.core.exceptions import UserNotFoundException
 from stark.core.permissions import Permissions
+from stark.dependencies.pagination import PaginationParams
 from stark.dependencies.permissions import (
     require_permission,
 )
 from stark.models.user import User
+from stark.schemas.pagination import PaginatedResponse
+from stark.schemas.permission import PermissionResponse
 from stark.schemas.user import (
     AuditLogResponse,
     UserAdminResponse,
@@ -16,6 +20,7 @@ from stark.services.audit_service import (
     create_audit_log,
     get_audit_logs,
 )
+from stark.services.permission_crud_service import get_permissions
 from stark.services.user_service import (
     activate_user,
     deactivate_user,
@@ -32,13 +37,18 @@ router = APIRouter(
 
 @router.get(
     "/users",
-    response_model=list[UserAdminResponse],
+    response_model=PaginatedResponse[UserAdminResponse],
 )
 def list_users_admin(
+    pagination: PaginationParams = Depends(),
     db: Session = Depends(get_db),
     admin: User = Depends(require_permission(Permissions.USERS_READ)),
 ):
-    return get_users(db)
+    return get_users(
+        db,
+        pagination.skip,
+        pagination.limit,
+    )
 
 
 @router.get(
@@ -56,10 +66,7 @@ def get_user_admin(
     )
 
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Usuário não encontrado",
-        )
+        raise UserNotFoundException()
 
     return user
 
@@ -79,10 +86,7 @@ def activate_user_admin(
     )
 
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Usuário não encontrado",
-        )
+        raise UserNotFoundException()
 
     create_audit_log(
         db,
@@ -109,10 +113,7 @@ def deactivate_user_admin(
     )
 
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Usuário não encontrado",
-        )
+        raise UserNotFoundException()
 
     create_audit_log(
         db,
@@ -140,10 +141,7 @@ def change_user_role(
     )
 
     if existing_user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Usuário não encontrado",
-        )
+        raise UserNotFoundException()
 
     old_role = existing_user.role
 
@@ -154,10 +152,7 @@ def change_user_role(
     )
 
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Usuário não encontrado",
-        )
+        raise UserNotFoundException()
 
     create_audit_log(
         db,
@@ -174,11 +169,36 @@ def change_user_role(
 
 
 @router.get(
+    "/permissions",
+    response_model=PaginatedResponse[PermissionResponse],
+)
+def list_permissions(
+    pagination: PaginationParams = Depends(),
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_permission(Permissions.PERMISSIONS_READ)),
+):
+    return get_permissions(
+        db,
+        pagination.skip,
+        pagination.limit,
+    )
+
+
+@router.get(
     "/audit-logs",
     response_model=list[AuditLogResponse],
 )
+@router.get(
+    "/audit-logs",
+    response_model=PaginatedResponse[AuditLogResponse],
+)
 def list_audit_logs(
+    pagination: PaginationParams = Depends(),
     db: Session = Depends(get_db),
     admin: User = Depends(require_permission(Permissions.AUDIT_READ)),
 ):
-    return get_audit_logs(db)
+    return get_audit_logs(
+        db,
+        pagination.skip,
+        pagination.limit,
+    )
