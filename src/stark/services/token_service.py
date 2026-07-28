@@ -12,6 +12,7 @@ from stark.repositories.refresh_token_repository import (
     RefreshTokenRepository,
 )
 from stark.repositories.user_repository import UserRepository
+from stark.schemas.auth import TokenResponse
 
 
 class TokenService:
@@ -87,7 +88,7 @@ class TokenService:
     def rotate_refresh_token(
         self,
         token: str,
-    ) -> dict | None:
+    ) -> TokenResponse | None:
 
         refresh_token = self.validate_refresh_token(
             token,
@@ -118,8 +119,7 @@ class TokenService:
             }
         )
 
-        return {
-            "access_token": new_access_token,
-            "refresh_token": new_refresh_token,
-            "token_type": "bearer",
-        }
+        return TokenResponse(
+            access_token=new_access_token,
+            refresh_token=new_refresh_token,
+        )
