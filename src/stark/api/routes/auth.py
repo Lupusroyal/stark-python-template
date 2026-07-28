@@ -72,18 +72,14 @@ def refresh(
 ):
     token_service = TokenService(db)
 
-    access_token = token_service.create_access_token_from_refresh(
+    tokens = token_service.rotate_refresh_token(
         data.refresh_token,
     )
 
-    if access_token is None:
+    if tokens is None:
         raise InvalidCredentialsException()
 
-    return {
-        "access_token": access_token,
-        "refresh_token": data.refresh_token,
-        "token_type": "bearer",
-    }
+    return tokens
 
 
 @router.post("/logout")

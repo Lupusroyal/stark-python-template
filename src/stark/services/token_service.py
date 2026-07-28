@@ -83,3 +83,43 @@ class TokenService:
         self.repository.revoke(refresh_token)
 
         return True
+
+    def rotate_refresh_token(
+        self,
+        token: str,
+    ) -> dict | None:
+
+        refresh_token = self.validate_refresh_token(
+            token,
+        )
+
+        if refresh_token is None:
+            return None
+
+        user = self.user_repository.get_by_id(
+            refresh_token.user_id,
+        )
+
+        if user is None:
+            return None
+
+        self.repository.revoke(
+            refresh_token,
+        )
+
+        new_refresh_token = self.create_refresh_token(
+            user.id,
+        )
+
+        new_access_token = create_access_token(
+            {
+                "sub": str(user.id),
+                "email": user.email,
+            }
+        )
+
+        return {
+            "access_token": new_access_token,
+            "refresh_token": new_refresh_token,
+            "token_type": "bearer",
+        }
