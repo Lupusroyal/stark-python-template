@@ -7,7 +7,10 @@ from stark.core.exceptions import InvalidCredentialsException
 from stark.core.security import create_access_token
 from stark.dependencies.auth import get_current_user
 from stark.models.user import User
-from stark.schemas.auth import TokenResponse
+from stark.schemas.auth import (
+    RefreshTokenRequest,
+    TokenResponse,
+)
 from stark.services.auth_service import authenticate_user
 from stark.services.token_service import TokenService
 
@@ -59,4 +62,44 @@ def me(
         "id": user.id,
         "name": user.name,
         "email": user.email,
+    }
+
+
+@router.post("/refresh", response_model=TokenResponse)
+def refresh(
+    data: RefreshTokenRequest,
+    db: Session = Depends(get_db),
+):
+    token_service = TokenService(db)
+
+    access_token = token_service.create_access_token_from_refresh(
+        data.refresh_token,
+    )
+
+    if access_token is None:
+        raise InvalidCredentialsException()
+
+    return {
+        "access_token": access_token,
+        "refresh_token": data.refresh_token,
+        "token_type": "bearer",
+    }
+
+
+@router.post("/logout")
+def logout(
+    data: RefreshTokenRequest,
+    db: Session = Depends(get_db),
+):
+    token_service = TokenService(db)
+
+    revoked = token_service.revoke_refresh_token(
+        data.refresh_token,
+    )
+
+    if not revoked:
+        raise InvalidCredentialsException()
+
+    return {
+        "message": "Logged out successfully",
     }
