@@ -9,6 +9,7 @@ from stark.dependencies.auth import get_current_user
 from stark.models.user import User
 from stark.schemas.auth import TokenResponse
 from stark.services.auth_service import authenticate_user
+from stark.services.token_service import TokenService
 
 router = APIRouter(
     prefix="/auth",
@@ -30,15 +31,22 @@ def login(
     if not user:
         raise InvalidCredentialsException()
 
-    token = create_access_token(
+    access_token = create_access_token(
         {
             "sub": str(user.id),
             "email": user.email,
         }
     )
 
+    token_service = TokenService(db)
+
+    refresh_token = token_service.create_refresh_token(
+        user.id,
+    )
+
     return {
-        "access_token": token,
+        "access_token": access_token,
+        "refresh_token": refresh_token,
         "token_type": "bearer",
     }
 
