@@ -371,3 +371,167 @@ def test_user_cannot_list_permissions(
     )
 
     assert response.status_code == 403
+
+
+def test_admin_can_create_permission(
+    client,
+    admin_token,
+):
+    response = client.post(
+        "/admin/permissions",
+        headers={
+            "Authorization": f"Bearer {admin_token}",
+        },
+        json={
+            "name": "projects.create",
+            "description": "Criar projetos",
+        },
+    )
+
+    assert response.status_code == 201
+
+    data = response.json()
+
+    assert data["name"] == "projects.create"
+    assert data["description"] == "Criar projetos"
+
+
+def test_admin_can_update_permission(
+    client,
+    admin_token,
+):
+    create = client.post(
+        "/admin/permissions",
+        headers={
+            "Authorization": f"Bearer {admin_token}",
+        },
+        json={
+            "name": "projects.update",
+            "description": "Descrição antiga",
+        },
+    )
+
+    permission_id = create.json()["id"]
+
+    response = client.put(
+        f"/admin/permissions/{permission_id}",
+        headers={
+            "Authorization": f"Bearer {admin_token}",
+        },
+        json={
+            "description": "Descrição nova",
+        },
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["description"] == "Descrição nova"
+
+
+def test_admin_can_delete_permission(
+    client,
+    admin_token,
+):
+    create = client.post(
+        "/admin/permissions",
+        headers={
+            "Authorization": f"Bearer {admin_token}",
+        },
+        json={
+            "name": "projects.delete",
+            "description": "Excluir projetos",
+        },
+    )
+
+    permission_id = create.json()["id"]
+
+    response = client.delete(
+        f"/admin/permissions/{permission_id}",
+        headers={
+            "Authorization": f"Bearer {admin_token}",
+        },
+    )
+
+    assert response.status_code == 204
+
+
+def test_user_cannot_create_permission(
+    client,
+    login_response,
+):
+    token = login_response.json()["access_token"]
+
+    response = client.post(
+        "/admin/permissions",
+        headers={
+            "Authorization": f"Bearer {token}",
+        },
+        json={
+            "name": "blocked.permission",
+        },
+    )
+
+    assert response.status_code == 403
+
+
+def test_user_cannot_update_permission(
+    client,
+    admin_token,
+    login_response,
+):
+    create = client.post(
+        "/admin/permissions",
+        headers={
+            "Authorization": f"Bearer {admin_token}",
+        },
+        json={
+            "name": "projects.test",
+        },
+    )
+
+    permission_id = create.json()["id"]
+
+    token = login_response.json()["access_token"]
+
+    response = client.put(
+        f"/admin/permissions/{permission_id}",
+        headers={
+            "Authorization": f"Bearer {token}",
+        },
+        json={
+            "description": "Nova descrição",
+        },
+    )
+
+    assert response.status_code == 403
+
+
+def test_user_cannot_delete_permission(
+    client,
+    admin_token,
+    login_response,
+):
+    create = client.post(
+        "/admin/permissions",
+        headers={
+            "Authorization": f"Bearer {admin_token}",
+        },
+        json={
+            "name": "projects.remove",
+        },
+    )
+
+    permission_id = create.json()["id"]
+
+    token = login_response.json()["access_token"]
+
+    response = client.delete(
+        f"/admin/permissions/{permission_id}",
+        headers={
+            "Authorization": f"Bearer {token}",
+        },
+    )
+
+    assert response.status_code == 403

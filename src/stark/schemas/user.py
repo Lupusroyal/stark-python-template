@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from pydantic import BaseModel, ConfigDict, EmailStr
 
 from stark.models.user import UserRole
@@ -36,13 +34,3 @@ class UserAdminResponse(BaseModel):
 
 class UserRoleUpdate(BaseModel):
     role: UserRole
-
-
-class AuditLogResponse(BaseModel):
-    id: int
-    actor_id: int
-    action: str
-    target_id: int
-    created_at: datetime
-
-    model_config = ConfigDict(from_attributes=True)

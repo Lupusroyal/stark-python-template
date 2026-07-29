@@ -14,6 +14,7 @@ from stark.schemas.user import (
     UserResponse,
     UserUpdate,
 )
+from stark.services.audit_service import create_audit_log
 from stark.services.user_service import (
     create_user,
     deactivate_user,
@@ -102,6 +103,13 @@ def update(
     if updated_user is None:
         raise UserNotFoundException()
 
+    create_audit_log(
+        db,
+        actor_id=current_user.id,
+        action="USER_UPDATE",
+        target_id=user_id,
+    )
+
     return updated_user
 
 
@@ -113,6 +121,13 @@ def delete_profile(
     deactivate_user(
         db,
         current_user.id,
+    )
+
+    create_audit_log(
+        db,
+        actor_id=current_user.id,
+        action="USER_DELETE",
+        target_id=current_user.id,
     )
 
     return {"message": "Usuário desativado com sucesso"}

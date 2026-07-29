@@ -9,10 +9,14 @@ from stark.dependencies.permissions import (
     require_permission,
 )
 from stark.models.user import User
+from stark.schemas.audit import AuditLogResponse
 from stark.schemas.pagination import PaginatedResponse
-from stark.schemas.permission import PermissionResponse
+from stark.schemas.permission import (
+    PermissionCreate,
+    PermissionResponse,
+    PermissionUpdate,
+)
 from stark.schemas.user import (
-    AuditLogResponse,
     UserAdminResponse,
     UserRoleUpdate,
 )
@@ -20,7 +24,12 @@ from stark.services.audit_service import (
     create_audit_log,
     get_audit_logs,
 )
-from stark.services.permission_crud_service import get_permissions
+from stark.services.permission_crud_service import (
+    create_permission,
+    delete_permission,
+    get_permissions,
+    update_permission,
+)
 from stark.services.user_service import (
     activate_user,
     deactivate_user,
@@ -184,10 +193,56 @@ def list_permissions(
     )
 
 
-@router.get(
-    "/audit-logs",
-    response_model=list[AuditLogResponse],
+@router.post(
+    "/permissions",
+    response_model=PermissionResponse,
+    status_code=201,
 )
+def create_permission_admin(
+    data: PermissionCreate,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_permission(Permissions.PERMISSIONS_CREATE)),
+):
+    return create_permission(
+        db,
+        data,
+    )
+
+
+@router.put(
+    "/permissions/{permission_id}",
+    response_model=PermissionResponse,
+)
+def update_permission_admin(
+    permission_id: int,
+    data: PermissionUpdate,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_permission(Permissions.PERMISSIONS_UPDATE)),
+):
+    return update_permission(
+        db,
+        permission_id,
+        data,
+    )
+
+
+@router.delete(
+    "/permissions/{permission_id}",
+    status_code=204,
+)
+def delete_permission_admin(
+    permission_id: int,
+    db: Session = Depends(get_db),
+    admin: User = Depends(
+        require_permission(Permissions.PERMISSIONS_DELETE),
+    ),
+):
+    delete_permission(
+        db,
+        permission_id,
+    )
+
+
 @router.get(
     "/audit-logs",
     response_model=PaginatedResponse[AuditLogResponse],

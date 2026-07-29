@@ -43,3 +43,25 @@ class EmailAlreadyExistsException(HTTPException):
                 "message": "Email já cadastrado",
             },
         )
+
+
+class PermissionNotFoundException(HTTPException):
+    def __init__(self):
+        super().__init__(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={
+                "error": "PERMISSION_NOT_FOUND",
+                "message": "Permissão não encontrada",
+            },
+        )
+
+
+class PermissionAlreadyExistsException(HTTPException):
+    def __init__(self):
+        super().__init__(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={
+                "error": "PERMISSION_ALREADY_EXISTS",
+                "message": "Permissão já cadastrada",
+            },
+        )

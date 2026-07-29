@@ -45,6 +45,15 @@ class PermissionRepository:
 
         return permission
 
+    def update(
+        self,
+        permission: Permission,
+    ) -> Permission:
+        self.db.commit()
+        self.db.refresh(permission)
+
+        return permission
+
     def delete(
         self,
         permission: Permission,
