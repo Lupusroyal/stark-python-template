@@ -9,6 +9,7 @@ from stark.dependencies.permissions import (
     require_permission,
 )
 from stark.models.user import User
+from stark.repositories.permission_repository import PermissionRepository
 from stark.schemas.audit import AuditLogResponse
 from stark.schemas.pagination import PaginatedResponse
 from stark.schemas.permission import (
@@ -203,10 +204,22 @@ def create_permission_admin(
     db: Session = Depends(get_db),
     admin: User = Depends(require_permission(Permissions.PERMISSIONS_CREATE)),
 ):
-    return create_permission(
+    permission = create_permission(
         db,
         data,
     )
+
+    create_audit_log(
+        db,
+        admin.id,
+        "create_permission",
+        permission.id,
+        details={
+            "name": permission.name,
+        },
+    )
+
+    return permission
 
 
 @router.put(
@@ -219,11 +232,23 @@ def update_permission_admin(
     db: Session = Depends(get_db),
     admin: User = Depends(require_permission(Permissions.PERMISSIONS_UPDATE)),
 ):
-    return update_permission(
+    permission = update_permission(
         db,
         permission_id,
         data,
     )
+
+    create_audit_log(
+        db,
+        admin.id,
+        "update_permission",
+        permission.id,
+        details={
+            "name": permission.name,
+        },
+    )
+
+    return permission
 
 
 @router.delete(
@@ -237,10 +262,27 @@ def delete_permission_admin(
         require_permission(Permissions.PERMISSIONS_DELETE),
     ),
 ):
+    repository = PermissionRepository(db)
+
+    permission = repository.get_by_id(
+        permission_id,
+    )
+
     delete_permission(
         db,
         permission_id,
     )
+
+    if permission is not None:
+        create_audit_log(
+            db,
+            admin.id,
+            "delete_permission",
+            permission.id,
+            details={
+                "name": permission.name,
+            },
+        )
 
 
 @router.get(
