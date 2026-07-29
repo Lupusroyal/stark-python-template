@@ -73,7 +73,7 @@ def update_profile(
 def get_user(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_permission("users.read")),
 ):
     user = get_user_by_id(
         db,
@@ -91,7 +91,7 @@ def update(
     user_id: int,
     user: UserUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_permission("users.update")),
 ):
     updated_user = update_user(
         db,
