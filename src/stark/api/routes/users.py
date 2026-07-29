@@ -7,6 +7,7 @@ from stark.core.exceptions import (
     UserNotFoundException,
 )
 from stark.dependencies.auth import get_current_user
+from stark.dependencies.permission import require_permission
 from stark.models.user import User
 from stark.schemas.user import (
     UserCreate,
@@ -27,7 +28,11 @@ router = APIRouter(
 )
 
 
-@router.post("/", response_model=UserResponse)
+@router.post(
+    "/",
+    response_model=UserResponse,
+    status_code=201,
+)
 def create(
     user: UserCreate,
     db: Session = Depends(get_db),
@@ -103,7 +108,7 @@ def update(
 @router.delete("/me")
 def delete_profile(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_permission("users.delete")),
 ):
     deactivate_user(
         db,

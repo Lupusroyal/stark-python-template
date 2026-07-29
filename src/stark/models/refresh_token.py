@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey, String
@@ -40,7 +40,7 @@ class RefreshToken(Base):
     )
 
     created_at: Mapped[datetime] = mapped_column(
-        default=datetime.utcnow,
+        default=datetime.now(UTC),
         nullable=False,
     )
 

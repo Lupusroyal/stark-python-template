@@ -2,6 +2,9 @@ from sqlalchemy.orm import Session
 
 from stark.models.permission import Permission
 from stark.repositories.permission_repository import PermissionRepository
+from stark.repositories.role_permission_repository import (
+    RolePermissionRepository,
+)
 
 DEFAULT_PERMISSIONS = [
     {
@@ -51,3 +54,26 @@ def create_default_permissions(db: Session):
             permission = Permission(**permission_data)
 
             repository.save(permission)
+
+
+def has_permission(
+    db: Session,
+    role: str,
+    permission_name: str,
+) -> bool:
+    permission_repository = PermissionRepository(db)
+    role_permission_repository = RolePermissionRepository(db)
+
+    permission = permission_repository.get_by_name(
+        permission_name,
+    )
+
+    if permission is None:
+        return False
+
+    role_permission = role_permission_repository.get_role_permission(
+        role,
+        permission.id,
+    )
+
+    return role_permission is not None
