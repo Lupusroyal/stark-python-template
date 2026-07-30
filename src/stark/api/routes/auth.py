@@ -11,6 +11,7 @@ from stark.schemas.auth import (
     RefreshTokenRequest,
     TokenResponse,
 )
+from stark.schemas.error import ErrorResponse
 from stark.services.auth_service import authenticate_user
 from stark.services.token_service import TokenService
 
@@ -20,7 +21,19 @@ router = APIRouter(
 )
 
 
-@router.post("/login", response_model=TokenResponse)
+@router.post(
+    "/login",
+    response_model=TokenResponse,
+    summary="Autenticar usuário",
+    description="Autentica um usuário utilizando e-mail e senha e retorna um Access Token e um Refresh Token.",
+    responses={
+        200: {"description": "Autenticação realizada com sucesso"},
+        401: {
+            "model": ErrorResponse,
+            "description": "Credenciais inválidas",
+        },
+    },
+)
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db),
@@ -53,7 +66,18 @@ def login(
     )
 
 
-@router.get("/me")
+@router.get(
+    "/me",
+    summary="Obter usuário autenticado",
+    description="Retorna os dados do usuário autenticado.",
+    responses={
+        200: {"description": "Dados do usuário"},
+        401: {
+            "model": ErrorResponse,
+            "description": "Credenciais inválidas",
+        },
+    },
+)
 def me(
     user: User = Depends(get_current_user),
 ):
@@ -64,7 +88,19 @@ def me(
     }
 
 
-@router.post("/refresh", response_model=TokenResponse)
+@router.post(
+    "/refresh",
+    response_model=TokenResponse,
+    summary="Renovar tokens",
+    description="Realiza a rotação do Refresh Token e gera um novo Access Token.",
+    responses={
+        200: {"description": "Tokens renovados"},
+        401: {
+            "model": ErrorResponse,
+            "description": "Refresh Token inválido",
+        },
+    },
+)
 def refresh(
     data: RefreshTokenRequest,
     db: Session = Depends(get_db),
@@ -81,7 +117,18 @@ def refresh(
     return tokens
 
 
-@router.post("/logout")
+@router.post(
+    "/logout",
+    summary="Encerrar sessão",
+    description="Revoga o Refresh Token informado, encerrando a sessão do usuário.",
+    responses={
+        200: {"description": "Logout realizado com sucesso"},
+        401: {
+            "model": ErrorResponse,
+            "description": "Refresh Token inválido",
+        },
+    },
+)
 def logout(
     data: RefreshTokenRequest,
     db: Session = Depends(get_db),

@@ -535,3 +535,107 @@ def test_user_cannot_delete_permission(
     )
 
     assert response.status_code == 403
+
+
+def test_create_permission_creates_audit_log(
+    client,
+    admin_token,
+    db_session,
+):
+    from stark.models.audit_log import AuditLog
+
+    response = client.post(
+        "/admin/permissions",
+        headers={
+            "Authorization": f"Bearer {admin_token}",
+        },
+        json={
+            "name": "audit.create",
+            "description": "Teste",
+        },
+    )
+
+    assert response.status_code == 201
+
+    logs = db_session.query(AuditLog).all()
+
+    assert len(logs) == 1
+    assert logs[0].action == "create_permission"
+    assert logs[0].details["name"] == "audit.create"
+
+
+def test_update_permission_creates_audit_log(
+    client,
+    admin_token,
+    db_session,
+):
+    from stark.models.audit_log import AuditLog
+
+    created = client.post(
+        "/admin/permissions",
+        headers={
+            "Authorization": f"Bearer {admin_token}",
+        },
+        json={
+            "name": "audit.update",
+        },
+    )
+
+    permission_id = created.json()["id"]
+
+    db_session.query(AuditLog).delete()
+    db_session.commit()
+
+    response = client.put(
+        f"/admin/permissions/{permission_id}",
+        headers={
+            "Authorization": f"Bearer {admin_token}",
+        },
+        json={
+            "description": "Atualizada",
+        },
+    )
+
+    assert response.status_code == 200
+
+    logs = db_session.query(AuditLog).all()
+
+    assert len(logs) == 1
+    assert logs[0].action == "update_permission"
+
+
+def test_delete_permission_creates_audit_log(
+    client,
+    admin_token,
+    db_session,
+):
+    from stark.models.audit_log import AuditLog
+
+    created = client.post(
+        "/admin/permissions",
+        headers={
+            "Authorization": f"Bearer {admin_token}",
+        },
+        json={
+            "name": "audit.delete",
+        },
+    )
+
+    permission_id = created.json()["id"]
+
+    db_session.query(AuditLog).delete()
+    db_session.commit()
+
+    response = client.delete(
+        f"/admin/permissions/{permission_id}",
+        headers={
+            "Authorization": f"Bearer {admin_token}",
+        },
+    )
+
+    assert response.status_code == 204
+
+    logs = db_session.query(AuditLog).all()
+
+    assert len(logs) == 1
+    assert logs[0].action == "delete_permission"

@@ -9,6 +9,7 @@ from stark.core.exceptions import (
 from stark.dependencies.auth import get_current_user
 from stark.dependencies.permission import require_permission
 from stark.models.user import User
+from stark.schemas.error import ErrorResponse
 from stark.schemas.user import (
     UserCreate,
     UserResponse,
@@ -33,6 +34,15 @@ router = APIRouter(
     "/",
     response_model=UserResponse,
     status_code=201,
+    summary="Criar usuário",
+    description="Cria um novo usuário na aplicação.",
+    responses={
+        201: {"description": "Usuário criado com sucesso"},
+        409: {
+            "model": ErrorResponse,
+            "description": "E-mail já cadastrado",
+        },
+    },
 )
 def create(
     user: UserCreate,
@@ -46,7 +56,18 @@ def create(
     return db_user
 
 
-@router.get("/me")
+@router.get(
+    "/me",
+    summary="Obter perfil",
+    description="Retorna os dados do usuário autenticado.",
+    responses={
+        200: {"description": "Perfil encontrado"},
+        401: {
+            "model": ErrorResponse,
+            "description": "Não autenticado",
+        },
+    },
+)
 def get_profile(
     current_user: User = Depends(get_current_user),
 ):
@@ -57,7 +78,19 @@ def get_profile(
     }
 
 
-@router.put("/me", response_model=UserResponse)
+@router.put(
+    "/me",
+    response_model=UserResponse,
+    summary="Atualizar perfil",
+    description="Atualiza os dados do usuário autenticado.",
+    responses={
+        200: {"description": "Perfil atualizado"},
+        401: {
+            "model": ErrorResponse,
+            "description": "Não autenticado",
+        },
+    },
+)
 def update_profile(
     user: UserUpdate,
     db: Session = Depends(get_db),
@@ -70,7 +103,27 @@ def update_profile(
     )
 
 
-@router.get("/{user_id}", response_model=UserResponse)
+@router.get(
+    "/{user_id}",
+    response_model=UserResponse,
+    summary="Buscar usuário",
+    description="Retorna um usuário pelo seu identificador.",
+    responses={
+        200: {"description": "Usuário encontrado"},
+        401: {
+            "model": ErrorResponse,
+            "description": "Não autenticado",
+        },
+        403: {
+            "model": ErrorResponse,
+            "description": "Permissão insuficiente",
+        },
+        404: {
+            "model": ErrorResponse,
+            "description": "Usuário não encontrado",
+        },
+    },
+)
 def get_user(
     user_id: int,
     db: Session = Depends(get_db),
@@ -87,7 +140,27 @@ def get_user(
     return user
 
 
-@router.put("/{user_id}", response_model=UserResponse)
+@router.put(
+    "/{user_id}",
+    response_model=UserResponse,
+    summary="Atualizar usuário",
+    description="Atualiza os dados de um usuário pelo identificador.",
+    responses={
+        200: {"description": "Usuário atualizado"},
+        401: {
+            "model": ErrorResponse,
+            "description": "Não autenticado",
+        },
+        403: {
+            "model": ErrorResponse,
+            "description": "Permissão insuficiente",
+        },
+        404: {
+            "model": ErrorResponse,
+            "description": "Usuário não encontrado",
+        },
+    },
+)
 def update(
     user_id: int,
     user: UserUpdate,
@@ -113,7 +186,22 @@ def update(
     return updated_user
 
 
-@router.delete("/me")
+@router.delete(
+    "/me",
+    summary="Desativar conta",
+    description="Desativa a conta do usuário autenticado.",
+    responses={
+        200: {"description": "Conta desativada"},
+        401: {
+            "model": ErrorResponse,
+            "description": "Não autenticado",
+        },
+        403: {
+            "model": ErrorResponse,
+            "description": "Permissão insuficiente",
+        },
+    },
+)
 def delete_profile(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_permission("users.delete")),
