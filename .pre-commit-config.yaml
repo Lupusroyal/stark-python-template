@@ -8,13 +8,13 @@ repos:
   - repo: local
     hooks:
       - id: mypy
-        name: mypy
+        name: Type checking (mypy)
         entry: uv run mypy .
         language: system
         pass_filenames: false
 
       - id: pytest
-        name: pytest
+        name: Tests (pytest)
         entry: uv run pytest
         language: system
         pass_filenames: false

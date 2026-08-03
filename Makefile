@@ -4,7 +4,7 @@ install:
 	uv sync
 
 run:
-	uv run python main.py
+	docker compose up -d
 
 test:
 	uv run pytest

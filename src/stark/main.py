@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from stark.api.routes.admin import router as admin_router
 from stark.api.routes.auth import router as auth_router
@@ -6,7 +8,11 @@ from stark.api.routes.health import router as health_router
 from stark.api.routes.users import router as users_router
 from stark.core.config import settings
 from stark.core.exception_handlers import register_exception_handlers
+from stark.core.logging import configure_logging
 from stark.middleware.request_middleware import RequestMiddleware
+from stark.middleware.security_headers import SecurityHeadersMiddleware
+
+configure_logging()
 
 app = FastAPI(
     title=settings.app_name,
@@ -41,7 +47,23 @@ Esta API utiliza autenticação Bearer Token para os endpoints protegidos.
 )
 
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+if settings.app_env == "production":
+    app.add_middleware(
+        TrustedHostMiddleware,
+        allowed_hosts=settings.allowed_hosts,
+    )
+
+
 app.add_middleware(RequestMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
 
 register_exception_handlers(app)
 
