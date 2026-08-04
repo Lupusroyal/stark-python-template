@@ -10,7 +10,7 @@ from stark.models.user import User, UserRole
 from stark.services.permission_service import create_default_permissions
 from stark.services.role_permission_service import create_default_role_permissions
 
-TEST_DATABASE_URL = "postgresql+psycopg://postgres:postgres@localhost:5432/stark_test"
+TEST_DATABASE_URL = "postgresql+psycopg://postgres:postgres@localhost:5433/stark_test"
 
 
 engine = create_engine(TEST_DATABASE_URL)
