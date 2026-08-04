@@ -4,7 +4,7 @@ services:
     env_file:
       - .env.production
     ports:
-      - "${API_PORT:-8000}:8000"
+      - "8080:8000"
     command: uv run uvicorn stark.main:app --host 0.0.0.0 --port 8000
     depends_on:
       postgres:
@@ -27,8 +27,6 @@ services:
     image: postgres:17
     env_file:
       - .env.production
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_DB: stark_db
