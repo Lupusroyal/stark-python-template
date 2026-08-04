@@ -134,13 +134,15 @@ Implemented headers:
 
 Every request receives:
 
+```text
 X-Request-ID
-
+```
 
 Processing time is also exposed:
 
+```text
 X-Process-Time
-
+```
 
 for request monitoring.
 
@@ -169,19 +171,21 @@ Allowed hosts can be configured for production environments.
 
 # Project Structure
 
+# Project Structure
+
 ```text
 .
 ├── src/
-│ └── stark/
-│ ├── api/
-│ │ └── routes/
-│ ├── core/
-│ ├── dependencies/
-│ ├── middleware/
-│ ├── models/
-│ ├── repositories/
-│ ├── schemas/
-│ └── services/
+│   └── stark/
+│       ├── api/
+│       │   └── routes/
+│       ├── core/
+│       ├── dependencies/
+│       ├── middleware/
+│       ├── models/
+│       ├── repositories/
+│       ├── schemas/
+│       └── services/
 │
 ├── tests/
 ├── alembic/
@@ -232,13 +236,17 @@ Example:
 
 Main project:
 
+```env
 API_PORT=8000
 POSTGRES_PORT=5432
+```
 
 Second clone:
 
+```env
 API_PORT=8001
 POSTGRES_PORT=5433
+```
 
 ---
 
@@ -254,16 +262,20 @@ The project uses Docker Compose as the main runtime environment.
 
 Start services:
 
+```bash
 make run
+```
 
 or:
 
+```bash
 docker compose up -d
+```
 
 Services started:
 
-FastAPI API
-PostgreSQL database
+- FastAPI API
+- PostgreSQL database
 
 Check containers:
 
@@ -278,11 +290,15 @@ http://localhost:8000
 
 Swagger:
 
+```text
 http://localhost:8000/docs
+```
 
 ReDoc:
 
+```text
 http://localhost:8000/redoc
+```
 
 Health check:
 
@@ -290,9 +306,12 @@ curl http://localhost:8000/health
 
 Expected response:
 
+```json
 {
   "status": "healthy"
 }
+```
+
 Database
 
 Database migrations are managed using Alembic.
@@ -320,13 +339,14 @@ uv run pytest
 
 Current test coverage includes:
 
-Authentication
-Users
-Permissions
-RBAC
-Audit system
-Error handling
-Security features
+- Authentication
+- Users
+- Permissions
+- RBAC
+- Audit system
+- Error handling
+- Security features
+
 Code Quality
 Ruff
 
@@ -367,6 +387,7 @@ make format
 Clean:
 
 make clean
+
 CI/CD and Security Automation
 
 The project uses GitHub automation:
@@ -375,10 +396,10 @@ GitHub Actions
 
 Continuous Integration validates:
 
-Ruff
-MyPy
-Pytest
-CodeQL
+- Ruff
+- MyPy
+- Pytest
+- CodeQL
 
 Static security analysis is enabled through GitHub CodeQL.
 
@@ -394,11 +415,10 @@ Production Checklist
 
 Before deploying:
 
-Change SECRET_KEY
-Configure environment variables
-Use managed PostgreSQL
-Set:
-APP_ENV=production
+- Change SECRET_KEY
+- Configure environment variables
+- Use managed PostgreSQL
+- Set APP_ENV=production
 
 Configure:
 
@@ -427,9 +447,9 @@ uv run mypy .
 
 Please ensure:
 
-Tests are added when necessary.
-No sensitive information is committed.
-CI checks pass.
+- Tests are added when necessary.
+- No sensitive information is committed.
+- CI checks pass.
 
 # License
 
