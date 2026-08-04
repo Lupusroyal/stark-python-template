@@ -171,8 +171,6 @@ Allowed hosts can be configured for production environments.
 
 # Project Structure
 
-# Project Structure
-
 ```text
 .
 ├── src/
@@ -312,30 +310,41 @@ Expected response:
 }
 ```
 
-Database
+# Database
 
 Database migrations are managed using Alembic.
 
 Run migrations:
 
+```bash
 alembic upgrade head
+```
 
 or:
 
+```bash
 make migrate
+```
 
 Create a migration:
 
+```bash
 alembic revision --autogenerate -m "description"
-Testing
+```
+
+# Testing
 
 Run all tests:
 
+```bash
 make test
+```
 
 or:
 
+```bash
 uv run pytest
+```
 
 Current test coverage includes:
 
@@ -347,46 +356,67 @@ Current test coverage includes:
 - Error handling
 - Security features
 
-Code Quality
-Ruff
+# Code Quality
+
+## Ruff
 
 Lint:
 
+```bash
 make lint
+```
 
 Format:
 
+```bash
 make format
-MyPy
+```
+
+## MyPy
 
 Type checking:
 
+```bash
 uv run mypy .
-Development Commands
+```
+
+# Development Commands
 
 Install dependencies:
 
+```bash
 make install
+```
 
 Run application:
 
+```bash
 make run
+```
 
 Run tests:
 
+```bash
 make test
+```
 
 Lint:
 
+```bash
 make lint
+```
 
 Format:
 
+```bash
 make format
+```
 
 Clean:
 
+```bash
 make clean
+```
 
 CI/CD and Security Automation
 
@@ -422,16 +452,17 @@ Before deploying:
 
 Configure:
 
-ALLOWED_HOSTS
-CORS_ORIGINS
+- ALLOWED_HOSTS
+- CORS_ORIGINS
 
 Review:
 
-Logs
-Monitoring
-Database backups
-Security settings
-Contributing
+- Logs
+- Monitoring
+- Database backups
+- Security settings
+
+# Contributing
 
 Contributions are welcome.
 
@@ -439,11 +470,13 @@ Before submitting a Pull Request:
 
 Run:
 
+```bash
 uv run pytest
 
 uv run ruff check .
 
 uv run mypy .
+```
 
 Please ensure:
 
@@ -455,9 +488,4 @@ Please ensure:
 
 MIT License
 
-Depois de colar:
 
-```bash
-git add README.md
-git commit -m "docs: improve project documentation"
-git push origin main
