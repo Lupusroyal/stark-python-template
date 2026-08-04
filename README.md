@@ -82,13 +82,14 @@ Role-Based Access Control system:
 
 Example:
 
+```text
 ADMIN
 
 ├── users.read
 ├── users.update
 ├── permissions.create
 └── audit.read
-
+```
 
 ## Audit System
 
@@ -168,6 +169,7 @@ Allowed hosts can be configured for production environments.
 
 # Project Structure
 
+```text
 .
 ├── src/
 │ └── stark/
@@ -190,6 +192,7 @@ Allowed hosts can be configured for production environments.
 ├── Makefile
 ├── pyproject.toml
 └── README.md
+```
 
 ---
 
@@ -199,9 +202,11 @@ Copy the environment example:
 
 ```bash
 cp .env.example .env
+```
 
 Configure required variables:
 
+```env
 APP_NAME=Stark API
 APP_VERSION=0.1.0
 APP_ENV=development
@@ -217,6 +222,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 
 API_PORT=8000
 POSTGRES_PORT=5432
+```
 
 Never use the default secret key in production.
 
@@ -236,13 +242,11 @@ POSTGRES_PORT=5433
 
 ---
 
-Installation
-
 Install dependencies:
 
-
+```bash
 uv sync
-
+```
 
 Running the Application
 
@@ -268,7 +272,9 @@ API Documentation
 
 Application URL:
 
+```text
 http://localhost:8000
+```
 
 Swagger:
 
@@ -424,10 +430,10 @@ Please ensure:
 Tests are added when necessary.
 No sensitive information is committed.
 CI checks pass.
-License
+
+# License
 
 MIT License
-
 
 Depois de colar:
 
