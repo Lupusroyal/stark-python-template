@@ -100,9 +100,23 @@ DATABASE_URL=postgresql+psycopg://postgres:postgres@postgres:5432/stark_db
 SECRET_KEY=sua_chave_secreta
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+API_PORT=8000
+POSTGRES_PORT=5432
 ```
 
 Nunca utilize a chave padrão em ambientes reais.
+
+As portas podem ser alteradas conforme necessário. Isso permite executar múltiplas instâncias do projeto simultaneamente sem conflitos.
+
+Exemplo:
+
+- Projeto principal:
+  - `API_PORT=8000`
+  - `POSTGRES_PORT=5432`
+- Segundo clone:
+  - `API_PORT=8001`
+  - `POSTGRES_PORT=5433`
 
 ---
 
