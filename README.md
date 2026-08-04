@@ -1,37 +1,151 @@
 # Stark Python Template
 
-Template profissional para APIs REST utilizando Python e FastAPI.
+<p align="center">
+A professional production-ready REST API template built with Python and FastAPI.
+</p>
 
-Projeto base desenvolvido com arquitetura em camadas, autenticação, autorização, auditoria, testes automatizados, segurança e ferramentas de qualidade para desenvolvimento e produção.
+<p align="center">
+
+![Python](https://img.shields.io/badge/python-3.12+-blue.svg)
+![FastAPI](https://img.shields.io/badge/FastAPI-production-green.svg)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-blue.svg)
+![Docker](https://img.shields.io/badge/Docker-ready-blue.svg)
+
+</p>
+
+<p align="center">
+
+![CI](https://github.com/Lupusroyal/stark-python-template/actions/workflows/ci.yml/badge.svg)
+![CodeQL](https://github.com/Lupusroyal/stark-python-template/actions/workflows/codeql.yml/badge.svg)
+
+</p>
 
 ---
 
-## Recursos
+## Overview
 
-- FastAPI
+Stark Python Template is a professional backend template for building modern REST APIs using Python and FastAPI.
+
+The project provides a complete foundation with:
+
+- Clean layered architecture;
+- Authentication and authorization;
+- Role-Based Access Control (RBAC);
+- Permission management;
+- Administrative auditing;
+- Automated testing;
+- Security middleware;
+- Docker infrastructure;
+- Continuous Integration.
+
+The goal is to provide a reusable and production-ready starting point for backend applications.
+
+---
+
+# Features
+
+## API Core
+
+- FastAPI framework
+- OpenAPI / Swagger documentation
+- Layered architecture
+- Dependency injection
+- Environment-based configuration
+- Global exception handling
+
+## Database
+
+- PostgreSQL 17
 - SQLAlchemy ORM
-- PostgreSQL
-- Alembic para migrations
-- JWT Authentication
-- Refresh Token com rotação
-- Controle de acesso baseado em papéis (RBAC)
-- Gerenciamento de usuários
-- Gerenciamento de permissões
-- Auditoria de ações administrativas
-- Paginação
-- Tratamento global de exceções
-- Validação com Pydantic
-- CORS configurável
-- Trusted Host em produção
-- Security Headers
-- Content Security Policy (CSP)
-- Request ID para rastreamento
-- Logging estruturado
-- Docker e Docker Compose
-- Pytest
-- MyPy
-- Ruff
-- UV
+- Alembic migrations
+- Structured database models
+
+## Authentication
+
+- JWT authentication
+- Bearer token authorization
+- Access tokens
+- Refresh tokens
+- Refresh token rotation
+- Token revocation
+- Secure password hashing
+
+## Authorization (RBAC)
+
+Role-Based Access Control system:
+
+- Users
+- Roles
+- Permissions
+- Protected administrative routes
+- Granular permission management
+
+Example:
+
+ADMIN
+
+├── users.read
+├── users.update
+├── permissions.create
+└── audit.read
+
+
+## Audit System
+
+Administrative actions are recorded.
+
+Examples:
+
+- Permission creation
+- Permission updates
+- Permission deletion
+- Role changes
+- User activation/deactivation
+- Administrative operations
+
+Each audit record contains:
+
+- Responsible user
+- Executed action
+- Target resource
+- Details
+- Timestamp
+
+---
+
+# Security
+
+The application includes multiple security layers.
+
+## Security Headers
+
+Implemented headers:
+
+- X-Content-Type-Options
+- X-Frame-Options
+- Referrer-Policy
+- Permissions-Policy
+- Content-Security-Policy
+- Cross-Origin-Opener-Policy
+- Cross-Origin-Resource-Policy
+
+## Request Tracking
+
+Every request receives:
+
+X-Request-ID
+
+
+Processing time is also exposed:
+
+X-Process-Time
+
+
+for request monitoring.
+
+## Trusted Hosts
+
+Allowed hosts can be configured for production environments.
 
 ---
 
@@ -46,24 +160,26 @@ Projeto base desenvolvido com arquitetura em camadas, autenticação, autorizaç
 - Docker
 - Docker Compose
 - UV
+- Pytest
+- Ruff
+- MyPy
 
 ---
 
-# Estrutura do projeto
+# Project Structure
 
-```text
 .
 ├── src/
-│   └── stark/
-│       ├── api/
-│       │   └── routes/
-│       ├── core/
-│       ├── dependencies/
-│       ├── middleware/
-│       ├── models/
-│       ├── repositories/
-│       ├── schemas/
-│       └── services/
+│ └── stark/
+│ ├── api/
+│ │ └── routes/
+│ ├── core/
+│ ├── dependencies/
+│ ├── middleware/
+│ ├── models/
+│ ├── repositories/
+│ ├── schemas/
+│ └── services/
 │
 ├── tests/
 ├── alembic/
@@ -74,21 +190,18 @@ Projeto base desenvolvido com arquitetura em camadas, autenticação, autorizaç
 ├── Makefile
 ├── pyproject.toml
 └── README.md
-```
 
 ---
 
-# Configuração
+# Configuration
 
-Copie o arquivo de exemplo:
+Copy the environment example:
 
 ```bash
 cp .env.example .env
-```
 
-Configure as variáveis necessárias:
+Configure required variables:
 
-```env
 APP_NAME=Stark API
 APP_VERSION=0.1.0
 APP_ENV=development
@@ -97,358 +210,228 @@ DEBUG=false
 
 DATABASE_URL=postgresql+psycopg://postgres:postgres@postgres:5432/stark_db
 
-SECRET_KEY=sua_chave_secreta
+SECRET_KEY=your_secret_key
+
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 
 API_PORT=8000
 POSTGRES_PORT=5432
-```
 
-Nunca utilize a chave padrão em ambientes reais.
+Never use the default secret key in production.
 
-As portas podem ser alteradas conforme necessário. Isso permite executar múltiplas instâncias do projeto simultaneamente sem conflitos.
+Ports can be changed to run multiple project instances.
 
-Exemplo:
+Example:
 
-- Projeto principal:
-  - `API_PORT=8000`
-  - `POSTGRES_PORT=5432`
-- Segundo clone:
-  - `API_PORT=8001`
-  - `POSTGRES_PORT=5433`
+Main project:
+
+API_PORT=8000
+POSTGRES_PORT=5432
+
+Second clone:
+
+API_PORT=8001
+POSTGRES_PORT=5433
 
 ---
 
-# Instalação
+Installation
 
-Instale as dependências:
+Install dependencies:
 
-```bash
+
 uv sync
-```
 
----
 
-# Executando a aplicação
+Running the Application
 
-A aplicação utiliza Docker Compose como ambiente principal.
+The project uses Docker Compose as the main runtime environment.
 
-Subir os serviços:
+Start services:
 
-```bash
 make run
-```
 
-ou:
+or:
 
-```bash
 docker compose up -d
-```
 
-Serviços iniciados:
+Services started:
 
-- API FastAPI
-- PostgreSQL
+FastAPI API
+PostgreSQL database
 
-Verificar containers:
+Check containers:
 
-```bash
 docker compose ps
-```
+API Documentation
 
----
+Application URL:
 
-# API
-
-A aplicação estará disponível em:
-
-```
 http://localhost:8000
-```
 
-Documentação Swagger:
+Swagger:
 
-```
 http://localhost:8000/docs
-```
 
-Documentação ReDoc:
+ReDoc:
 
-```
 http://localhost:8000/redoc
-```
 
 Health check:
 
-```bash
 curl http://localhost:8000/health
-```
 
-Resposta esperada:
+Expected response:
 
-```json
 {
   "status": "healthy"
 }
-```
+Database
 
----
+Database migrations are managed using Alembic.
 
-# Banco de dados
+Run migrations:
 
-As migrations são gerenciadas pelo Alembic.
-
-Executar migrations:
-
-```bash
 alembic upgrade head
-```
 
-ou:
+or:
 
-```bash
 make migrate
-```
 
-Criar uma nova migration:
+Create a migration:
 
-```bash
-alembic revision --autogenerate -m "descricao"
-```
+alembic revision --autogenerate -m "description"
+Testing
 
----
+Run all tests:
 
-# Autenticação
-
-A API utiliza autenticação JWT com Bearer Token.
-
-Fluxo:
-
-## Login
-
-Endpoint:
-
-```
-POST /auth/login
-```
-
-Retorna:
-
-- access_token
-- refresh_token
-
-Exemplo de utilização:
-
-```
-Authorization: Bearer TOKEN
-```
-
-Tokens possuem:
-
-- expiração configurável;
-- refresh token com rotação;
-- revogação no logout.
-
----
-
-# Controle de acesso (RBAC)
-
-A autorização é baseada em papéis e permissões.
-
-Exemplo:
-
-```
-ADMIN
-
-├── users.read
-├── users.update
-├── permissions.create
-└── audit.read
-```
-
-Permissões podem ser associadas aos papéis dos usuários.
-
----
-
-# Auditoria
-
-Ações administrativas importantes são registradas.
-
-Exemplos:
-
-- criação de permissões;
-- alteração de permissões;
-- exclusão de permissões;
-- alteração de papéis;
-- ativação/desativação de usuários.
-
-Cada registro contém:
-
-- usuário responsável;
-- ação executada;
-- alvo da ação;
-- detalhes;
-- data e hora.
-
----
-
-# Segurança
-
-A aplicação possui:
-
-## Headers de segurança
-
-Incluindo:
-
-- X-Content-Type-Options
-- X-Frame-Options
-- Referrer-Policy
-- Permissions-Policy
-- Content-Security-Policy
-- Cross-Origin-Opener-Policy
-- Cross-Origin-Resource-Policy
-
-## Request Tracking
-
-Cada requisição recebe:
-
-```
-X-Request-ID
-```
-
-Também é informado:
-
-```
-X-Process-Time
-```
-
-para acompanhamento do tempo de processamento.
-
-## Trusted Host
-
-O controle de hosts permitidos é ativado em ambiente de produção.
-
----
-
-# Testes
-
-Executar todos os testes:
-
-```bash
 make test
-```
 
-ou:
+or:
 
-```bash
 uv run pytest
-```
 
-O projeto possui testes cobrindo:
+Current test coverage includes:
 
-- autenticação;
-- usuários;
-- permissões;
-- RBAC;
-- auditoria;
-- tratamento de erros;
-- segurança.
-
----
-
-# Qualidade de código
-
-## Ruff
+Authentication
+Users
+Permissions
+RBAC
+Audit system
+Error handling
+Security features
+Code Quality
+Ruff
 
 Lint:
 
-```bash
 make lint
-```
 
-Formatação:
+Format:
 
-```bash
 make format
-```
+MyPy
 
-## MyPy
+Type checking:
 
-Verificação de tipos:
-
-```bash
 uv run mypy .
-```
+Development Commands
 
----
+Install dependencies:
 
-# Desenvolvimento
-
-Comandos disponíveis:
-
-## Instalar dependências
-
-```bash
 make install
-```
 
-## Executar aplicação
+Run application:
 
-```bash
 make run
-```
 
-## Executar testes
+Run tests:
 
-```bash
 make test
-```
 
-## Verificar código
+Lint:
 
-```bash
 make lint
-```
 
-## Formatar código
+Format:
 
-```bash
 make format
-```
 
-## Limpar arquivos temporários
+Clean:
 
-```bash
 make clean
-```
+CI/CD and Security Automation
 
----
+The project uses GitHub automation:
 
-# Ambiente de produção
+GitHub Actions
 
-Antes do deploy:
+Continuous Integration validates:
 
-- alterar `SECRET_KEY`;
-- configurar variáveis de ambiente;
-- utilizar banco PostgreSQL gerenciado;
-- definir:
+Ruff
+MyPy
+Pytest
+CodeQL
 
-```env
+Static security analysis is enabled through GitHub CodeQL.
+
+Dependabot
+
+Dependency updates are automatically monitored.
+
+Updates are grouped into:
+
+Python dependencies
+GitHub Actions dependencies
+Production Checklist
+
+Before deploying:
+
+Change SECRET_KEY
+Configure environment variables
+Use managed PostgreSQL
+Set:
 APP_ENV=production
-```
 
-- configurar:
+Configure:
 
-```env
 ALLOWED_HOSTS
 CORS_ORIGINS
-```
 
-- revisar logs e monitoramento.
+Review:
 
----
+Logs
+Monitoring
+Database backups
+Security settings
+Contributing
 
-# Licença
+Contributions are welcome.
 
-MIT
+Before submitting a Pull Request:
+
+Run:
+
+uv run pytest
+
+uv run ruff check .
+
+uv run mypy .
+
+Please ensure:
+
+Tests are added when necessary.
+No sensitive information is committed.
+CI checks pass.
+License
+
+MIT License
+
+
+Depois de colar:
+
+```bash
+git add README.md
+git commit -m "docs: improve project documentation"
+git push origin main
